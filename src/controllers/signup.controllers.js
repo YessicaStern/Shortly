@@ -1,6 +1,7 @@
 import { connection } from "../connection/connection.js";
 import {joiPasswordExtendCore} from "joi-password"
 import joi from "joi";
+import bcrypt from "bcrypt";
 
 const joiPassword = joi.extend(joiPasswordExtendCore);
 
@@ -40,7 +41,8 @@ const postSignUp= async(req,res)=>{
         if(emailValid[0]){
             return res.status(409).send({message: `e-mail already registered`});
         };
-        connection.query(`INSERT INTO users (name,email,password) VALUES ($1,$2,$3)`,[String(name),String(email),String(password)]);
+        const token = bcrypt.hashSync(password, 13 );
+        connection.query(`INSERT INTO users (name,email,password) VALUES ($1,$2,$3)`,[String(name),String(email),String(token)]);
         return res.sendStatus(201);
     }catch(err){
         return res.status(500).send(err);
