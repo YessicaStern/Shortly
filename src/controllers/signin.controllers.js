@@ -29,18 +29,19 @@ const postSignIn=async (req,res)=>{
         const user= response.filter((e)=>{
             if(e.email===email){
                 return e
-            }
+            };
         });   
         if(!user[0]){
-            return res.status(401).send({message:`Unauthorized`})
+            return res.status(401).send({message:`Unauthorized`});
         }
         const passwordToken=user[0].password;
         const passwordValid= bcrypt.compareSync(password,passwordToken);
         if(!passwordValid){
-            return res.status(401).send({message:`Unauthorized`})
+            return res.status(401).send({message:`Unauthorized`});
         }
-
+        const idUser= user[0].id;
         const token = bcrypt.hashSync(password, 13 );
+        await connection.query(`INSERT INTO sessions (session,id_user) VALUES ($1,$2)`,[token,idUser]);
     return res.status(200).send({token});
 
     }catch(error){
