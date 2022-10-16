@@ -45,7 +45,7 @@ const postSignUp= async(req,res)=>{
         connection.query(`INSERT INTO users (name,email,password) VALUES ($1,$2,$3)`,[String(name),String(email),String(token)]);
         return res.sendStatus(201);
     }catch(err){
-        return res.status(500).send(err);
+        return res.status(500).send(err.message);
     }
 };
 export {postSignUp};

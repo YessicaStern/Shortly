@@ -41,11 +41,11 @@ const postSignIn=async (req,res)=>{
         }
         const idUser= user[0].id;
         const token = bcrypt.hashSync(password, 13 );
-        await connection.query(`INSERT INTO sessions (session,id_user) VALUES ($1,$2)`,[token,idUser]);
+        await connection.query(`INSERT INTO sessions (session,"idUser") VALUES ($1,$2)`,[token,idUser]);
     return res.status(200).send({token});
 
-    }catch(error){
-        return res.status(500).send(error);
+    }catch(err){
+        return res.status(500).send(err.message);
     }
 };
 export {postSignIn};
