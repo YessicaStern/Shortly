@@ -26,13 +26,15 @@ const postUrl= async (req,res)=>{
 
             const urlObject =(await connection.query(`SELECT * FROM urls WHERE "shortUrl"=$1`,[shortUrl])).rows;
             const idUrl=urlObject[0].id;
+
+            console.log(urlObject,idUrl);
             await connection.query(`INSERT INTO visitors ("idUrl") VALUES ($1)`,[idUrl]);
 
             return res.status(201).send({shortUrl});
         }
         return res.sendStatus(422);
     }catch(err){
-        return res.status(500).send(err.message);
+        return res.status(500).send(err.message);   
     }; 
 };
 
@@ -40,7 +42,7 @@ const postUrl= async (req,res)=>{
 const getUrlId=async(req,res)=>{
     const {idUrl}=req.params;
     try{
-        const urls=(await connection.query(`SELECT * FROM urls`)).rows;
+        const urls=(await connection.query(`SELECT id, "shortUrl", url FROM urls`)).rows;
         const url= urls.filter((e)=>{
             if(e.id===Number(idUrl)){
                 return e;
@@ -106,10 +108,10 @@ const deleteUrl= async (req,res)=>{
             };
         });
         if(!url[0]){
-            return res.sendStatus(404);
+            return res.send(404);
         };
         if(url[0].idUser===idUser){
-            await connection.query(`DELETE FROM urls WHERE id=$1`,[idUrl]);
+            await connection.query(`DELETE FROM urls WHERE id = ($1)`,[idUrl]);
             return res.sendStatus(200);
         };
         return res.sendStatus(401);
